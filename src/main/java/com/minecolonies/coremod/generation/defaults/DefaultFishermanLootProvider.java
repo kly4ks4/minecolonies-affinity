@@ -2,6 +2,7 @@ package com.minecolonies.coremod.generation.defaults;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.minecolonies.api.compatibility.Compatibility;
 import com.minecolonies.api.loot.EntityInBiomeCategory;
 import com.minecolonies.api.loot.ModLootTables;
 import com.minecolonies.api.loot.ResearchUnlocked;
@@ -14,11 +15,13 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.storage.loot.*;
 import net.minecraft.world.level.storage.loot.entries.*;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.AlternativeLootItemCondition;
 import org.antlr.v4.tool.Alternative;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,6 +46,11 @@ public class DefaultFishermanLootProvider extends SimpleLootTableProvider
     @Override
     protected void registerTables(@NotNull final LootTableRegistrar registrar)
     {
+        if(Compatibility.isAquacultureInstalled())
+        {
+            registerAquacultureLoot(registrar);
+        }
+
         registerStandardLoot(registrar);
         registerBonusLoot(registrar);
     }
@@ -65,6 +73,30 @@ public class DefaultFishermanLootProvider extends SimpleLootTableProvider
                 });
 
         super.validate(map, newTracker);
+    }
+
+    private void registerAquacultureLoot(@NotNull final LootTableRegistrar registrar)
+    {
+        List<ResourceLocation> genericLoot = Compatibility.getAdditionalFishingLoot();
+        List<ResourceLocation> waterLoot = Compatibility.getAdditionalWaterFishingLoot();
+
+        for(ResourceLocation currentGenericLoot : genericLoot)
+        {
+            registrar.register(currentGenericLoot, LootContextParamSets.FISHING, LootTable.lootTable()
+                    .withPool(LootPool.lootPool()
+                            .add(LootTableReference.lootTableReference(currentGenericLoot).setWeight(1))
+                    )
+            );
+        }
+
+        for(ResourceLocation currentWaterLoot : waterLoot)
+        {
+            registrar.register(currentWaterLoot, LootContextParamSets.FISHING, LootTable.lootTable()
+                    .withPool(LootPool.lootPool()
+                            .add(LootTableReference.lootTableReference(currentWaterLoot).setWeight(1))
+                    )
+            );
+        }
     }
 
     private void registerStandardLoot(@NotNull final LootTableRegistrar registrar)

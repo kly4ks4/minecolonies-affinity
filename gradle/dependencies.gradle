@@ -7,6 +7,10 @@ repositories {
         name "JourneyMap"
         url "https://jm.gserv.me/repository/maven-public/"
     }
+    maven {
+        name "Aquaculture"
+        url "https://girafi.dk/maven/"
+    }
 }
 
 dependencies {
@@ -59,4 +63,7 @@ dependencies {
 
     apiCompileOnly fg.deobf("slimeknights.mantle:Mantle:${project.exactMinecraftVersion}-${project.mantleVersion}")
     apiCompileOnly fg.deobf("slimeknights.tconstruct:TConstruct:${project.exactMinecraftVersion}-${project.tinkersConstructVersion}")
+
+    compileOnly fg.deobf("com.teammetallurgy.aquaculture:aquaculture2_${project.exactMinecraftVersion}:${project.exactMinecraftVersion}-${project.aquacultureVersion}")
+    apiCompileOnly fg.deobf("com.teammetallurgy.aquaculture:aquaculture2_${project.exactMinecraftVersion}:${project.exactMinecraftVersion}-${project.aquacultureVersion}")
 }

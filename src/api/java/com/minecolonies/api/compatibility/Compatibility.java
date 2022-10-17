@@ -1,9 +1,11 @@
 package com.minecolonies.api.compatibility;
 
+import com.minecolonies.api.compatibility.aquaculture.AquacultureProxy;
 import com.minecolonies.api.compatibility.dynamictrees.DynamicTreeProxy;
 import com.minecolonies.api.compatibility.resourcefulbees.IBeehiveCompat;
 import com.minecolonies.api.compatibility.tinkers.*;
 import com.minecolonies.api.util.constant.IToolType;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.Item;
@@ -35,6 +37,7 @@ public final class Compatibility
     public static SlimeTreeProxy   tinkersSlimeCompat = new SlimeTreeProxy();
     public static TinkersToolProxy tinkersCompat      = new TinkersToolProxy();
     public static DynamicTreeProxy dynamicTreesCompat = new DynamicTreeProxy();
+    public static AquacultureProxy aquacultureCompat = new AquacultureProxy();
 
     /**
      * This method checks to see if STACK is able to mine anything. It goes through all compatibility checks.
@@ -142,6 +145,31 @@ public final class Compatibility
     public static int getToolLevel(@NotNull final ItemStack stack)
     {
         return tinkersCompat.getToolLevel(stack);
+    }
+
+    public static boolean isAquacultureInstalled()
+    {
+        return aquacultureCompat.isAquaculturePresent();
+    }
+
+    public static List<ResourceLocation> getAdditionalFishingLoot()
+    {
+        return aquacultureCompat.getGenericFishingLoot();
+    }
+
+    public static List<ResourceLocation> getAdditionalWaterFishingLoot()
+    {
+        return aquacultureCompat.getWaterFishingLoot();
+    }
+
+    public static List<ResourceLocation> getAdditionalLavaFishingLoot()
+    {
+        return aquacultureCompat.getLavaFishingLoot();
+    }
+
+    public static List<ResourceLocation> getAdditionalNetherFishingLoot()
+    {
+        return aquacultureCompat.getNetherFishingLoot();
     }
 
     /**

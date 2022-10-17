@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.minecolonies.api.MinecoloniesAPIProxy;
+import com.minecolonies.api.compatibility.aquaculture.AquacultureCompat;
 import com.minecolonies.api.compatibility.dynamictrees.DynamicTreeCompat;
 import com.minecolonies.api.compatibility.resourcefulbees.ResourcefulBeesCompat;
 import com.minecolonies.api.compatibility.tinkers.SlimeTreeCheck;
@@ -788,6 +789,10 @@ public class CompatibilityManager implements ICompatibilityManager
         if (ModList.get().isLoaded("dynamictrees"))
         {
             Compatibility.dynamicTreesCompat = new DynamicTreeCompat();
+        }
+        if(ModList.get().isLoaded("aquaculture"))
+        {
+            Compatibility.aquacultureCompat = new AquacultureCompat();
         }
     }
 

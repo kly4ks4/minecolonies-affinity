@@ -1,17 +1,23 @@
 package com.minecolonies.coremod.entity;
 
+import com.minecolonies.api.compatibility.Compatibility;
 import com.minecolonies.api.entity.ModEntities;
 import com.minecolonies.api.loot.ModLootTables;
 import com.minecolonies.coremod.entity.citizen.EntityCitizen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
@@ -25,7 +31,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootTableReference;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.EntityHitResult;
@@ -525,8 +533,33 @@ public class NewBobberEntity extends Entity implements IEntityAdditionalSpawnDat
                                                             .withLuck((float)this.luck);
 
                 lootcontext$builder.withParameter(LootContextParams.KILLER_ENTITY, this.angler).withParameter(LootContextParams.THIS_ENTITY, this);
-                final LootTable loottable = this.level.getServer().getLootTables().get(ModLootTables.FISHING);
-                final List<ItemStack> list = loottable.getRandomItems(lootcontext$builder.create(LootContextParamSets.FISHING));
+
+                final LootTable.Builder loottablebuilder = LootTable.lootTable();
+                final LootPool.Builder lootpoolbuilder = LootPool.lootPool();
+
+                lootpoolbuilder.add(LootTableReference.lootTableReference(ModLootTables.FISHING).setWeight(60));
+
+                if(Compatibility.isAquacultureInstalled())
+                {
+                    List<ResourceLocation> genericLoot = Compatibility.getAdditionalFishingLoot();
+                    List<ResourceLocation> waterLoot = Compatibility.getAdditionalWaterFishingLoot();
+
+                    for(ResourceLocation currentGenericLoot : genericLoot)
+                    {
+                        lootpoolbuilder.add(LootTableReference.lootTableReference(currentGenericLoot).setWeight(10));
+                    }
+
+                    for(ResourceLocation currentWaterLoot : waterLoot)
+                    {
+                        lootpoolbuilder.add(LootTableReference.lootTableReference(currentWaterLoot).setWeight(30));
+                    }
+                }
+
+                final LootTable finalLootTable = loottablebuilder.withPool(lootpoolbuilder).build();
+
+                final List<ItemStack> list = finalLootTable.getRandomItems(lootcontext$builder.create(LootContextParamSets.FISHING));
+
+                System.out.println(list.toArray());
 
                 for (final ItemStack itemstack : list)
                 {
